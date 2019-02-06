@@ -54,10 +54,10 @@ class App extends Component {
     const { data } = this.state;
     return (
       <div className="App">
-        <header className="App-header">
+        <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Spring boot test task</h1>
-        </header>
+        </div>
         <p className="App-intro">
           <form onSubmit={this.handleSubmit}>
             <h3>Add new product</h3>
