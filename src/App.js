@@ -3,19 +3,19 @@ import logo from './logo.svg';
 import './App.css';
 import ReactTable from "react-table";
 import "react-table/react-table.css";
-import Hamoni from "hamoni-sync";
+import matchSorter from 'match-sorter';
 
-class App extends Component {
-  constructor() {
-    super();
-    this.state = {
+export default class App extends Component {
+  
+  state = {
       data: [],
       name: "",
       brand: "",
       price: "",
-      quantity: ""
+      quantity: "",
+      loading: true
     };
-  }
+  
 
   handleChange = event => {
     if (event.target.name === "name")
@@ -26,10 +26,6 @@ class App extends Component {
       this.setState({ price: event.target.value });
     if (event.target.name === "quantity")
       this.setState({ quantity: event.target.value });
-  };
-
-  handleSubmit = event => {
-    event.preventDefault();
   };
 
   renderEditable = cellInfo => {
@@ -51,7 +47,7 @@ class App extends Component {
   };
 
   render() {
-    const { data } = this.state;
+    const { data, loading } = this.state;
     return (
       <div className="App">
         <div className="App-header">
@@ -101,41 +97,63 @@ class App extends Component {
           </form>
         </p>
         <div>
+        <button onClick={() => this.exportToXLS()}>Export shown to xls</button>
+        <label/>{" "}
+        <button onClick={() => this.showLeftovers()}>Show leftovers</button>
+        </div>
+        <div>
           <ReactTable
             data={data}
+            filterable
+            defaultFilterMethod={(filter, row) =>
+            String(row[filter.id]) === filter.value}
             columns={[
+              {
+                Header: "ID",
+                accessor: "id",
+                Cell: this.renderEditable
+              },
               {
                 Header: "Name",
                 accessor: "name",
-                Cell: this.renderEditable
+                Cell: this.renderEditable,
+                filterMethod: (filter, rows) =>
+                matchSorter(rows, filter.value, { keys: ["name"] }),
+                filterAll: true
               },
               {
                 Header: "Brand",
                 accessor: "brand",
-                Cell: this.renderEditable
+                Cell: this.renderEditable,
+                filterMethod: (filter, rows) =>
+                matchSorter(rows, filter.value, { keys: ["brand"] }),
+                filterAll: true
               },
               {
                 Header: "Price",
                 accessor: "price",
-                Cell: this.renderEditable
+                Cell: this.renderEditable,
+                filterMethod: (filter, rows) =>
+                matchSorter(rows, filter.value, { keys: ["price"] }),
+                filterAll: true
               },
               {
                 Header: "Quantity",
                 accessor: "quantity",
-                Cell: this.renderEditable
+                Cell: this.renderEditable,
+                filterMethod: (filter, rows) =>
+                matchSorter(rows, filter.value, { keys: ["quantity"] }),
+                filterAll: true
               },
               {
-                Header: "Name and Brand",
-                id: "prioduct",
+                id: "delete",
                 accessor: d => (
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: d.name + " " + d.brand
-                    }}
-                  />
-                )
+                  <button onClick={() => this.deleteProduct(d.id)}>Delete</button>
+                ),
+                filterable: false
               }
             ]}
+            loading={loading}
             defaultPageSize={10}
             className="-striped -highlight"
           />
@@ -145,47 +163,53 @@ class App extends Component {
   };
 
   componentDidMount() {
-    let hamoni = new Hamoni("41eacaa1-9b87-4c0c-823c-0bdf7ee6036e", "1089a468da6f44e1ab9c80e50055d39f");
-    hamoni
-      .connect()
-      .then(() => {
-          hamoni
-        .get("datagrid")
-        .then(listPrimitive => {
-          this.listPrimitive = listPrimitive;
-          this.setState({
-            data: [...listPrimitive.getAll()]
-          });
-          listPrimitive.onItemAdded(item => {
-            this.setState({ data: [...this.state.data, item.value] });
-          });
-          listPrimitive.onItemUpdated(item => {
-            let data = [
-            ...this.state.data.slice(0, item.index),
-            item.value,
-            ...this.state.data.slice(item.index + 1)
-            ];
-            this.setState({ data: data });
-          });
-          listPrimitive.onSync(data => {
-            this.setState({ data: data });
-          });
-      })
-      .catch(console.log);
-      })
-      .catch(console.log);
+    this.setState({ loading: true });
+    fetch(`http://localhost:8080/api/products`)
+    .then(res => res.json())
+    .then(json => this.setState({ data: json,
+                                  loading: false }));
   };
 
   handleSubmit = event => {
-    this.listPrimitive.push({
-        name: this.state.name,
-        brand: this.state.brand,
-        price: this.state.price,
-        quantity: this.state.quantity
-    });
-    this.setState({ name: "", brand: "", price: "", quantity:"" });
+    this.setState({ loading: true });
+    console.log('--->>>' + JSON.stringify({name:this.state.name, brand:this.state.brand, price:this.state.price, quantity:this.state.quantity}) + ']');
+    
+    fetch(`http://localhost:8080/api/products`, 
+      {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({name:this.state.name, brand:this.state.brand, price:this.state.price, quantity:this.state.quantity})
+      })
+        .then(res => res.json())
+        .then(this.setState({ loading: false }));
     event.preventDefault();
   };
-}
 
-export default App;
+  deleteProduct(id) {
+    console.log('--->>>' + id + ']');
+    fetch(`http://localhost:8080/api/products/` + id,
+    {
+      method: 'DELETE'
+    }
+    )
+    .then(function(response) {
+      console.log('response = [' + response + ']');
+      if(response.status===204) {
+        return;
+    }
+    throw new Error('Network response was not ok.');
+   }).then(() => {
+      const newData = this.state.data.filter(i => i.id !== id)
+      this.setState({ data: newData,
+                      loading:false })
+      });
+  }
+
+  exportToXLS() {
+
+  }
+
+  showLeftovers() {
+
+  }
+}
