@@ -97,13 +97,16 @@ export default class App extends Component {
           </form>
         </p>
         <div>
-        <button onClick={() => this.exportToXLS()}>Export shown to xls</button>
+        <button onClick={this.exportToXLS}>Export shown to xls</button>
         <label/>{" "}
-        <button onClick={() => this.showLeftovers()}>Show leftovers</button>
+        <button onClick={this.showLeftovers}>Show leftovers</button>
         </div>
         <div>
           <ReactTable
             data={data}
+            ref={(r) => {
+              this.selectTable = r;
+            }}
             filterable
             defaultFilterMethod={(filter, row) =>
             String(row[filter.id]) === filter.value}
@@ -172,7 +175,6 @@ export default class App extends Component {
 
   handleSubmit = event => {
     this.setState({ loading: true });
-    console.log('--->>>' + JSON.stringify({name:this.state.name, brand:this.state.brand, price:this.state.price, quantity:this.state.quantity}) + ']');
     
     fetch(`http://localhost:8080/api/products`, 
       {
@@ -186,7 +188,8 @@ export default class App extends Component {
   };
 
   deleteProduct(id) {
-    console.log('--->>>' + id + ']');
+    this.setState({ loading: true });
+    console.log('Deleting product with id = [' + id + ']');
     fetch(`http://localhost:8080/api/products/` + id,
     {
       method: 'DELETE'
@@ -205,11 +208,27 @@ export default class App extends Component {
       });
   }
 
-  exportToXLS() {
-
+  exportToXLS = event => {
+    console.log('Export data to xls = [' + this.selectTable.getResolvedState().sortedData + ']');
+    fetch(`http://localhost:8080/api/products/export`, 
+      {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(this.selectTable.getResolvedState().sortedData)
+      })
+      .then(function(response) {
+        console.log('response = [' + response + ']');
+        if(response.status===204) { //TODO change response status
+          return;
+      }
+      throw new Error('Network response was not ok.');
+     }).then(() => {
+        this.setState({ loading:false })
+        });
+    event.preventDefault();
   }
 
   showLeftovers() {
-
+    console.log('here');
   }
 }
