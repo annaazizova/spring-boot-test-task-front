@@ -4,44 +4,10 @@ import './App.css';
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 import matchSorter from 'match-sorter';
+import { productsFetchData, productAddNew, productEdit, productDeleteById, leftoversFetchData, exportToXLS } from './actions';
 import { connect } from 'react-redux';
-import { productsFetchData } from './actions/products';
-import { productAddNew } from './actions/product';
 
 class App extends Component {
-  
-  
-  
-
-  handleChange = event => {
-    if (event.target.name === "name")
-      this.setState({ name: event.target.value });
-    if (event.target.name === "brand")
-      this.setState({ brand: event.target.value });
-    if (event.target.name === "price")
-      this.setState({ price: event.target.value });
-    if (event.target.name === "quantity")
-      this.setState({ quantity: event.target.value });
-  };
-
-  renderEditable = cellInfo => {
-    return (
-      <div
-        style={{ backgroundColor: "#fafafa" }}
-        contentEditable
-        suppressContentEditableWarning
-        onBlur={e => {
-          let row = this.state.data[cellInfo.index];
-          row[cellInfo.column.id] = e.target.innerHTML;
-          this.listPrimitive.update(cellInfo.index, row);
-        }}
-        dangerouslySetInnerHTML={{
-          __html: this.state.data[cellInfo.index][cellInfo.column.id]
-        }}
-      />
-    );
-  };
-
   render() {
     const { data, isLoading, name, brand, price, quantity } = this.props;
     return (
@@ -88,7 +54,7 @@ class App extends Component {
                 value={quantity}
                 onChange={this.handleChange}
               />
-            </label> 
+            </label>{" "}  
             <input type="submit" value="Add" />
           </form>
         </p>
@@ -161,63 +127,61 @@ class App extends Component {
     );
   };
 
+  handleChange = event => {
+    if (event.target.name === "name")
+      this.setState({ name: event.target.value });
+    if (event.target.name === "brand")
+      this.setState({ brand: event.target.value });
+    if (event.target.name === "price")
+      this.setState({ price: event.target.value });
+    if (event.target.name === "quantity")
+      this.setState({ quantity: event.target.value });
+  };
+
+  renderEditable = cellInfo => {
+    return (
+      <div
+        style={{ backgroundColor: "#fafafa" }}
+        contentEditable
+        suppressContentEditableWarning
+        onBlur={e => {
+          let row = this.props.data[cellInfo.index];
+          row[cellInfo.column.id] = e.target.innerHTML;
+          this.listPrimitive.update(cellInfo.index, row);
+        }}
+        dangerouslySetInnerHTML={{
+          __html: this.props.data[cellInfo.index][cellInfo.column.id]
+        }}
+      />
+    );
+  };
+
   componentDidMount() {
-    this.props.fetchData(`http://localhost:8080/api/products`);
+    this.props.productsFetchData(`http://localhost:8080/api/products`);
   };
 
   handleSubmit = event => {
-    this.props.addProduct(`http://localhost:8080/api/products`, event.name, event.brand, event.price, event.quantity);
+    this.props.productAddNew(`http://localhost:8080/api/products`, event.name, event.brand, event.price, event.quantity);
     event.preventDefault();
   };
 
   deleteProduct(id) {
-    this.setState({ loading: true });
-    console.log('Deleting product with id = [' + id + ']');
-    fetch(`http://localhost:8080/api/products/` + id,
-    {
-      method: 'DELETE'
-    }
-    )
-    .then(function(response) {
-      console.log('response = [' + response + ']');
-      if(response.status===204) {
-        return;
-    }
-    throw new Error('Network response was not ok.');
-   }).then(() => {
-      const newData = this.state.data.filter(i => i.id !== id)
-      this.setState({ data: newData,
-                      loading:false })
-      });
+    this.props.productDeleteById(`http://localhost:8080/api/products`, id);
   }
 
   exportToXLS = event => {
     console.log('Export data to xls = [' + this.selectTable.getResolvedState().sortedData + ']');
-    fetch(`http://localhost:8080/api/products/export`, 
-      {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify(this.selectTable.getResolvedState().sortedData)
-      })
-      .then(function(response) {
-        console.log('response = [' + response + ']');
-        if(response.status===204) { //TODO change response status
-          return;
-      }
-      throw new Error('Network response was not ok.');
-     }).then(() => {
-        this.setState({ loading:false })
-        });
+    this.props.exportToXLS(`http://localhost:8080/api/products/export`, this.selectTable.getResolvedState().sortedData);
     event.preventDefault();
   }
 
   showLeftovers() {
-    console.log('here');
+    this.props.leftoversFetchData(`http://localhost:8080/api/products/leftovers`);
   }
 }
 
 const mapStateToProps = (state) => {
-  return { //TODO {state} - all fields
+  return {
       data: state.data,
       hasError: state.hasError,
       isLoading: state.isLoading,
@@ -230,12 +194,13 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-      fetchData: (url) => dispatch(productsFetchData(url)),
-      addProduct: (url, name, brand, price, quantity) => dispatch(productAddNew(url, name, brand, price, quantity)),
-
-  };
+const mapDispatchToProps = {
+  productsFetchData, 
+  productAddNew, 
+  productEdit, 
+  productDeleteById,
+  leftoversFetchData,
+  exportToXLS,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

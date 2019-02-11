@@ -4,12 +4,12 @@ import { Provider } from 'react-redux';
 import configureStore from './store/configureStore';
 
 import App from './App';
+import LoginPage from './components/LoginPage';
 
-const store = configureStore(); // You can also pass in an initialState here
-
+const store = configureStore();
 render(
     <Provider store={store}>
-        <App />
+        <LoginPage />
     </Provider>,
     document.getElementById('root')
 );
