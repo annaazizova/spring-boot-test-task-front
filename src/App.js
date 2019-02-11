@@ -4,17 +4,13 @@ import './App.css';
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 import matchSorter from 'match-sorter';
+import { connect } from 'react-redux';
+import { productsFetchData } from './actions/products';
+import { productAddNew } from './actions/product';
 
-export default class App extends Component {
+class App extends Component {
   
-  state = {
-      data: [],
-      name: "",
-      brand: "",
-      price: "",
-      quantity: "",
-      loading: true
-    };
+  
   
 
   handleChange = event => {
@@ -47,7 +43,7 @@ export default class App extends Component {
   };
 
   render() {
-    const { data, loading } = this.state;
+    const { data, isLoading, name, brand, price, quantity } = this.props;
     return (
       <div className="App">
         <div className="App-header">
@@ -62,7 +58,7 @@ export default class App extends Component {
               <input
                 type="text"
                 name="name"
-                value={this.state.name}
+                value={name}
                 onChange={this.handleChange}
               />
             </label>{" "}
@@ -71,7 +67,7 @@ export default class App extends Component {
               <input
                 type="text"
                 name="brand"
-                value={this.state.brand}
+                value={brand}
                 onChange={this.handleChange}
               />
             </label>{" "}
@@ -80,7 +76,7 @@ export default class App extends Component {
               <input
                 type="text"
                 name="price"
-                value={this.state.price}
+                value={price}
                 onChange={this.handleChange}
               />
             </label>{" "}
@@ -89,7 +85,7 @@ export default class App extends Component {
               <input
                 type="text"
                 name="quantity"
-                value={this.state.quantity}
+                value={quantity}
                 onChange={this.handleChange}
               />
             </label> 
@@ -156,7 +152,7 @@ export default class App extends Component {
                 filterable: false
               }
             ]}
-            loading={loading}
+            loading={isLoading}
             defaultPageSize={10}
             className="-striped -highlight"
           />
@@ -166,24 +162,11 @@ export default class App extends Component {
   };
 
   componentDidMount() {
-    this.setState({ loading: true });
-    fetch(`http://localhost:8080/api/products`)
-    .then(res => res.json())
-    .then(json => this.setState({ data: json,
-                                  loading: false }));
+    this.props.fetchData(`http://localhost:8080/api/products`);
   };
 
   handleSubmit = event => {
-    this.setState({ loading: true });
-    
-    fetch(`http://localhost:8080/api/products`, 
-      {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({name:this.state.name, brand:this.state.brand, price:this.state.price, quantity:this.state.quantity})
-      })
-        .then(res => res.json())
-        .then(this.setState({ loading: false }));
+    this.props.addProduct(`http://localhost:8080/api/products`, event.name, event.brand, event.price, event.quantity);
     event.preventDefault();
   };
 
@@ -232,3 +215,27 @@ export default class App extends Component {
     console.log('here');
   }
 }
+
+const mapStateToProps = (state) => {
+  return { //TODO {state} - all fields
+      data: state.data,
+      hasError: state.hasError,
+      isLoading: state.isLoading,
+      page:state.page,
+      id:state.id,
+      name: state.name,
+      brand:state.brand,
+      price:state.price,
+      quantity:state.quantity
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+      fetchData: (url) => dispatch(productsFetchData(url)),
+      addProduct: (url, name, brand, price, quantity) => dispatch(productAddNew(url, name, brand, price, quantity)),
+
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
