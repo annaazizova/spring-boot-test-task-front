@@ -1,16 +1,12 @@
 import React from 'react';
-
 import { connect } from 'react-redux';
-
-import { login, logout } from '../actions';
+import { login, usernameChanged, passwordChanged } from '../../actions';
 
 class LoginPage extends React.Component {
     render() {
-        this.props.logout();
-
         const { username, password } = this.props;
         return (
-            <div>
+            <div className="LoginPage">
                 <h2>Login</h2>
                 <form name="form" onSubmit={this.handleSubmit}>
                     <div className={'form-group' + (!username ? ' has-error' : '')}>
@@ -35,14 +31,15 @@ class LoginPage extends React.Component {
         );
     }
     
-
-    handleChange(e) {
-        const { name, value } = e.target;
-        this.setState({ [name]: value });
+    handleChange = event => {
+        if (event.target.name === "username")
+            this.props.usernameChanged(event.target.value);
+        if (event.target.name === "password")
+            this.props.passwordChanged(event.target.value);
     }
 
-    handleSubmit(e) {
-        e.preventDefault();
+    handleSubmit = event => {
+        event.preventDefault();
 
         const { username, password } = this.props;
         if (username && password) {
@@ -61,7 +58,8 @@ const mapStateToProps = (state) => {
   
 const mapDispatchToProps = {
     login,
-    logout
+    usernameChanged,
+    passwordChanged,
 };
   
 export default connect(mapStateToProps, mapDispatchToProps)(LoginPage);

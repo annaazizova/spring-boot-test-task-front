@@ -7,7 +7,7 @@ const initialState = {
     quantity: '',
     hasError: false,
     isLoading: false,
-    page:'LOGINPAGE',
+    page:'LOGIN_PAGE',
     username: '',
     password: '',
     loggedIn: false,
@@ -16,11 +16,11 @@ const initialState = {
 
   export default function reduce(state = initialState, action) {
     switch (action.type) {
+        case 'USERNAME_CHANGED':return onUsernameChanged(state, action);
+        case 'PASSWORD_CHANGED':return onPasswordChanged(state, action);
+        
         case 'LOGIN_SUCCEEDED': return onLoginSucceeded(state, action);
         case 'LOGIN_DENIED': return onLoginDenied(state, action);
-
-        case 'LOGOUT_SUCCEEDED': return onLogoutSucceeded(state);
-        case 'LOGOUT_DENIED': return onLogoutDenied(state);
 
         case 'IS_LOADING': return onIsLoading(state);
         case 'HAS_ERROR': return onHasError(state, action);
@@ -34,6 +34,11 @@ const initialState = {
         case 'LEFTOVERS_FETCH_DATA_RESOLVE': return onLeftoversFetchDataResolve(state, action);
 
         case 'EXPORT_TO_XLS_RESOLVE': return onExportToXLSResolve(state, action);
+
+        case 'NEW_NAME_CHANGED': return onNewNameChanged(state, action);
+        case 'NEW_BRAND_CHANGED': return onNewBrandChanged(state, action);
+        case 'NEW_PRICE_CHANGED': return onNewPriceChanged(state, action);
+        case 'NEW_QUANTITY_CHANGED': return onNewQuantityChanged(state, action);
         
         default: return state;
     }
@@ -119,16 +124,44 @@ function onLoginDenied(state) {
     };
 }
 
-function onLogoutSucceeded(state) {
+function onNewNameChanged(state, { name }) {
     return {
         ...state,
-        loggedIn:false,
+        name: name,
     };
 }
 
-function onLogoutDenied(state) {
+function onNewBrandChanged(state, { brand }) {
     return {
         ...state,
-        loggedIn: true,
+        brand: brand,
+    };
+}
+
+function onNewPriceChanged(state, { price }) {
+    return {
+        ...state,
+        price: price,
+    };
+}
+
+function onNewQuantityChanged(state, { quantity }) {
+    return {
+        ...state,
+        quantity: quantity,
+    };
+}
+
+function onUsernameChanged(state, { username }) {
+    return {
+        ...state,
+        username: username,
+    };
+}
+
+function onPasswordChanged(state, { password }) {
+    return {
+        ...state,
+        password: password,
     };
 }

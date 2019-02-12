@@ -168,20 +168,56 @@ export function login(url, username, password) {
     };
 }
 
-export function logout(url) {
+export function newNameChanged(name) {
     return (dispatch) => {
-        setTimeout(() => {
-            api.logout(url)
-                .then(() => {
-                    dispatch({
-                        type: 'LOGOUT_SUCCEEDED',
-                    });
-                })
-                .catch(() => {
-                    dispatch({
-                        type: 'LOGOUT_DENIED',
-                    });
-                });
-        }, 0);
+        dispatch({
+            type: 'NEW_NAME_CHANGED',
+            name,
+        }); 
+    };
+}
+
+export function newBrandChanged(brand) {
+    return (dispatch) => {
+        dispatch({
+            type: 'NEW_BRAND_CHANGED',
+            brand,
+        }); 
+    };
+}
+
+export function newPriceChanged(price) {
+    return (dispatch) => {
+        dispatch({
+            type: 'NEW_PRICE_CHANGED',
+            price,
+        }); 
+    };
+}
+
+export function newQuantityChanged(quantity) {
+    return (dispatch) => {
+        dispatch({
+            type: 'NEW_QUANTITY_CHANGED',
+            quantity,
+        }); 
+    };
+}
+
+export function usernameChanged(username) {
+    return (dispatch) => {
+        dispatch({
+            type: 'USERNAME_CHANGED',
+            username,
+        }); 
+    };
+}
+
+export function passwordChanged(password) {
+    return (dispatch) => {
+        dispatch({
+            type: 'PASSWORD_CHANGED',
+            password,
+        }); 
     };
 }
