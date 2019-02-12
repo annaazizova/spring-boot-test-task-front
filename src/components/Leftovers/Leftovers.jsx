@@ -9,8 +9,7 @@ class Leftovers extends Component {
   render() {
     const { data, isLoading } = this.props;
     return (
-      <div className="Products">
-        <button onClick={this.backToProducts}>Back to products</button>
+      <div className="Leftovers">
         <div>
           <ReactTable
             data={data}
@@ -18,27 +17,22 @@ class Leftovers extends Component {
               {
                 Header: "ID",
                 accessor: "id",
-                Cell: this.renderEditable
               },
               {
                 Header: "Name",
                 accessor: "name",
-                Cell: this.renderEditable
               },
               {
                 Header: "Brand",
                 accessor: "brand",
-                Cell: this.renderEditable
               },
               {
                 Header: "Price",
                 accessor: "price",
-                Cell: this.renderEditable,
               },
               {
                 Header: "Quantity",
                 accessor: "quantity",
-                Cell: this.renderEditable
               }
             ]}
             loading={isLoading}
@@ -46,25 +40,8 @@ class Leftovers extends Component {
             className="-striped -highlight"
           />
         </div>
+        <button onClick={this.backToProducts}>Back to products</button>
       </div>
-    );
-  };
-
-  renderEditable = cellInfo => {
-    return (
-      <div
-        style={{ backgroundColor: "#fafafa" }}
-        contentEditable
-        suppressContentEditableWarning
-        onBlur={e => {
-          let row = this.props.data[cellInfo.index];
-          row[cellInfo.column.id] = e.target.innerHTML;
-          this.listPrimitive.update(cellInfo.index, row);
-        }}
-        dangerouslySetInnerHTML={{
-          __html: this.props.data[cellInfo.index][cellInfo.column.id]
-        }}
-      />
     );
   };
 

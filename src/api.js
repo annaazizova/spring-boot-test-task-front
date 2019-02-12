@@ -32,7 +32,7 @@ export function productAddNew(url, name, brand, price, quantity) {
               }
             )
             .then(response => {
-                if (response.status !== 200) {//TODO change status
+                if (response.status !== 201) {
                     reject({
                         status: response.status,
                     });
@@ -41,12 +41,8 @@ export function productAddNew(url, name, brand, price, quantity) {
                 return response;
             })
             .then(response => response.json())
-            .then(id => {
-                if ('errorCode' in id) {
-                    reject(id);
-                } else {
-                    resolve(id);
-                }
+            .then(product => {
+                resolve(product.id);
             })
             .catch(reject);
     });
@@ -60,21 +56,15 @@ export function productDeleteById(url, id) {
               }
             )
             .then(response => {
-                if (response.status !== 200) {//TODO change status
+                if (response.status !== 204) {
                     reject({
                         status: response.status,
                     });
                 }
-
                 return response;
             })
-            .then(response => response.json())
-            .then(data => { //TODO maybe remove data
-                if ('errorCode' in data) {
-                    reject();
-                } else {
-                    resolve();
-                }
+            .then(() => {
+                resolve(id);
             })
             .catch(reject);
     });
@@ -89,21 +79,15 @@ export function productEdit(url, id, name, brand, price, quantity) {
                 body: JSON.stringify({id:id, name:name, brand:brand, price:price, quantity:quantity})
             })
             .then(response => {
-                if (response.status !== 200) {//TODO change status
+                if (response.status !== 200) {
                     reject({
-                        status: response.status,
+                        errorCode: response.status,
                     });
                 }
-
-                return response;
+                return;
             })
-            .then(response => response.json())
-            .then(data => { //TODO maybe remove data
-                if ('errorCode' in data) {
-                    reject();
-                } else {
-                    resolve();
-                }
+            .then(() => {
+                resolve(id, name, brand, price, quantity);
             })
             .catch(reject);
     });
@@ -115,12 +99,12 @@ export function exportToXLS(url, data) {
             {
                 method: 'POST',
                 headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({ data })
+                body: JSON.stringify(data)
             })
             .then(response => {
-                if (response.status !== 200) {//TODO change status
+                if (response.status !== 204) {
                     reject({
-                        status: response.status,
+                        errorCode: response.status,
                     });
                 }
 
@@ -149,7 +133,7 @@ export function login(url, username, password) {
             .then(response => {
                 if (response.status !== 200) {//TODO change status
                     reject({
-                        status: response.status,
+                        errorCode: response.status,
                     });
                 }
 
@@ -157,35 +141,7 @@ export function login(url, username, password) {
             })
             .then(response => response.json())
             .then(userRole => { //TODO maybe remove data
-                if ('errorCode' in userRole) {
-                    reject();
-                } else {
-                    resolve(userRole);
-                }
-            })
-            .catch(reject);
-    });
-}
-
-export function logout(url) {
-    return new Promise((resolve, reject) => {
-        fetch(url)
-            .then(response => {
-                if (response.status !== 200) {//TODO change status
-                    reject({
-                        status: response.status,
-                    });
-                }
-
-                return response;
-            })
-            .then(response => response.json())
-            .then(data => { //TODO maybe remove data
-                if ('errorCode' in data) {
-                    reject();
-                } else {
-                    resolve();
-                }
+                resolve(userRole);
             })
             .catch(reject);
     });

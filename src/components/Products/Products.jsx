@@ -1,21 +1,18 @@
 import React, { Component } from 'react';
-import logo from '../../logo.svg';
+import { connect } from 'react-redux';
 import '../Products/Products.css';
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 import matchSorter from 'match-sorter';
 import { productsFetchData, productAddNew, productEdit, productDeleteById, leftoversFetchData, exportToXLS, newNameChanged, newBrandChanged, newPriceChanged, newQuantityChanged } from '../../actions';
-import { connect } from 'react-redux';
+
 
 class Products extends Component {
   render() {
-    const { data, isLoading, name, brand, price, quantity } = this.props;
+    const { data, isLoading, name, brand, price, quantity, hasError, errorCode } = this.props;
     return (
       <div className="Products">
-        <div className="Products-header">
-          <img src={logo} className="Products-logo" alt="logo" />
-          <h1 className="Products-title">Spring boot test task</h1>
-        </div>
+        {hasError && <h1 style={{color : 'red', fontSize: '16px'}}>Something went wrong. Error {errorCode}</h1>}
         <p className="Products-intro">
           <form onSubmit={this.handleSubmit}>
             <label>
@@ -70,7 +67,6 @@ class Products extends Component {
               {
                 Header: "ID",
                 accessor: "id",
-                Cell: this.renderEditable
               },
               {
                 Header: "Name",
@@ -103,6 +99,13 @@ class Products extends Component {
                 filterMethod: (filter, rows) =>
                 matchSorter(rows, filter.value, { keys: ["quantity"] }),
                 filterAll: true
+              },
+              {
+                id: "update",
+                accessor: d => (
+                  <button onClick={() => this.updateProduct(d.id, d.name, d.brand, d.price, d.quantity)}>Update</button>
+                ),
+                filterable: false
               },
               {
                 id: "delete",
@@ -146,7 +149,6 @@ class Products extends Component {
         onBlur={e => {
           let row = this.props.data[cellInfo.index];
           row[cellInfo.column.id] = e.target.innerHTML;
-          this.listPrimitive.update(cellInfo.index, row);
         }}
         dangerouslySetInnerHTML={{
           __html: this.props.data[cellInfo.index][cellInfo.column.id]
@@ -160,7 +162,7 @@ class Products extends Component {
   };
 
   handleSubmit = event => {
-    this.props.productAddNew(`http://localhost:8080/api/products`, event.name, event.brand, event.price, event.quantity);
+    this.props.productAddNew(`http://localhost:8080/api/products`, this.props.name, this.props.brand, this.props.price, this.props.quantity);
     event.preventDefault();
   };
 
@@ -168,9 +170,18 @@ class Products extends Component {
     this.props.productDeleteById(`http://localhost:8080/api/products`, id);
   }
 
+  updateProduct(id, name, brand, price, quantity) {
+    this.props.productEdit(`http://localhost:8080/api/products`, id, name, brand, price, quantity);
+  }
+
   exportToXLS = event => {
-    console.log('Export data to xls = [' + this.selectTable.getResolvedState().sortedData + ']');
-    this.props.exportToXLS(`http://localhost:8080/api/products/export`, this.selectTable.getResolvedState().sortedData);
+    const newData = this.selectTable.getResolvedState().sortedData.map(elem => ({ 
+                                                                                  id: elem.id, 
+                                                                                  name: elem.name, 
+                                                                                  brand: elem.brand, 
+                                                                                  price: elem.price, 
+                                                                                  quantity: elem.quantity}));
+    this.props.exportToXLS(`http://localhost:8080/api/products/export`, newData);
     event.preventDefault();
   }
 
@@ -184,6 +195,7 @@ const mapStateToProps = (state) => {
   return {
       data: state.data,
       hasError: state.hasError,
+      errorCode: state.errorCode,
       isLoading: state.isLoading,
       page:state.page,
       id:state.id,

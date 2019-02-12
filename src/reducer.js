@@ -55,6 +55,8 @@ function onProductsFetchDataResolve(state, { data }) {
     return {
         ...state,
         isLoading: false,
+        hasError: false,
+        errorCode: '', 
         data: data,
         page: 'PRODUCTS',
     };
@@ -63,16 +65,32 @@ function onProductsFetchDataResolve(state, { data }) {
 function onProductAddNewResolve(state, { id }) {
     return {
         ...state,
-        isLoading: false,
-        //add id to this new product
+        isLoading: false, 
+        hasError: false,
+        errorCode: '',  
+        data: [
+                ...state.data,
+                { 
+                    id:id,
+                    name:state.name,
+                    brand:state.brand, 
+                    price:state.price, 
+                    quantity:state.quantity
+                }
+        ],
+        name: '',
+        brand: '',
+        price: '',
+        quantity: '',
     };
 }
 
-function onHasError(state){
+function onHasError(state, { errorCode }){
     return {
         ...state,
         isLoading: false,
         hasError: true,
+        errorCode: errorCode,
     };
 }
 
@@ -80,15 +98,20 @@ function onProductEditResolve(state, { id, name, brand, price, quantity }) {
     return {
         ...state,
         isLoading: false,
-        //add new values to existing product, find it in state by id
+        hasError:false,
+        errorCode: '', 
+        data: state.data.map(prod => (prod.id === id ? {id, name, brand, price, quantity} : prod))
     };
 }
 
-function onProductDeleteById(state, action) {
+function onProductDeleteById(state, { id }) {
+    const newData = state.data.filter(prod => prod.id !== id);
     return {
         ...state,
         isLoading: false,
-        //delete from state
+        hasError: false,
+        errorCode: '', 
+        data: newData,
     };
 }
 
@@ -96,6 +119,8 @@ function onLeftoversFetchDataResolve(state, { data }) {
     return {
         ...state,
         isLoading: false,
+        hasError: false,
+        errorCode: '', 
         data: data,
         page: 'LEFTOVERS',
     }
@@ -105,6 +130,8 @@ function onExportToXLSResolve(state, action) {
     return {
         ...state,
         isLoading: false,
+        hasError: false,
+        errorCode: '', 
         //exported
     };
 }
@@ -113,6 +140,8 @@ function onLoginSucceeded(state, { userRole }) {
     return {
         ...state,
         loggedIn:true,
+        hasError: false,
+        errorCode: '', 
         userRole: userRole,
         page:'PRODUCTS',
     };

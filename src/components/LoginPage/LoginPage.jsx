@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import '../LoginPage/LoginPage.css';
 import { login, usernameChanged, passwordChanged } from '../../actions';
 
 class LoginPage extends React.Component {
@@ -8,7 +9,7 @@ class LoginPage extends React.Component {
         return (
             <div className="LoginPage">
                 <h2>Login</h2>
-                <form name="form" onSubmit={this.handleSubmit}>
+                <form className="form" onSubmit={this.handleSubmit}>
                     <div className={'form-group' + (!username ? ' has-error' : '')}>
                         <label htmlFor="username">Username</label>
                         <input type="text" className="form-control" name="username" value={username} onChange={this.handleChange} />
@@ -23,8 +24,8 @@ class LoginPage extends React.Component {
                             <div className="help-block">Password is required</div>
                         }
                     </div>
-                    <div className="form-group">
-                        <button className="btn btn-primary">Login</button>
+                    <div>
+                        <button>Login</button>
                     </div>
                 </form>
             </div>

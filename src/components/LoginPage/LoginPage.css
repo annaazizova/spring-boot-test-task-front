@@ -1,4 +1,10 @@
 .LoginPage {
     text-align: center;
+    align-items: center;
+}
+
+.form {
+   text-align: center;
+   vertical-align: middle;
 }
   

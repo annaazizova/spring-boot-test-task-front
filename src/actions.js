@@ -16,9 +16,10 @@ export function productsFetchData(url) {
                         data,
                     });
                 })
-                .catch(() => {
+                .catch(({ errorCode }) => {
                     dispatch({
                         type: 'HAS_ERROR',
+                        errorCode: errorCode,
                     });
                 });
         }, 0);
@@ -40,9 +41,10 @@ export function productAddNew(url, name, brand, price, quantity) {
                         id,
                     });
                 })
-                .catch(() => {
+                .catch(({ errorCode }) => {
                     dispatch({
                         type: 'HAS_ERROR',
+                        errorCode: errorCode,
                     });
                 });
         }, 0);
@@ -68,9 +70,10 @@ export function productAddNew(url, name, brand, price, quantity) {
                         quantity
                     });
                 })
-                .catch(() => {
+                .catch(({ errorCode }) => {
                     dispatch({
                         type: 'HAS_ERROR',
+                        errorCode: errorCode,
                     });
                 });
         }, 0);
@@ -92,9 +95,10 @@ export function productAddNew(url, name, brand, price, quantity) {
                         id,
                     });
                 })
-                .catch(() => {
+                .catch(({ errorCode }) => {
                     dispatch({
                         type: 'HAS_ERROR',
+                        errorCode: errorCode,
                     });
                 });
         }, 0);
@@ -116,9 +120,10 @@ export function productAddNew(url, name, brand, price, quantity) {
                         data,
                     });
                 })
-                .catch(() => {
+                .catch(({ errorCode }) => {
                     dispatch({
                         type: 'HAS_ERROR',
+                        errorCode: errorCode,
                     });
                 });
         }, 0);
@@ -126,6 +131,8 @@ export function productAddNew(url, name, brand, price, quantity) {
 }
 
 export function exportToXLS(url, data) {
+    console.log('will export, url = [' + url + ']');
+    console.log(data);
     return (dispatch) => {
         setTimeout(() => {
             
@@ -140,9 +147,10 @@ export function exportToXLS(url, data) {
                         data,
                     });
                 })
-                .catch(() => {
+                .catch(({ errorCode }) => {
                     dispatch({
                         type: 'HAS_ERROR',
+                        errorCode: errorCode,
                     });
                 });
         }, 0);
