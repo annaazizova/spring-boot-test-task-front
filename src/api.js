@@ -102,21 +102,15 @@ export function exportToXLS(url, data) {
                 body: JSON.stringify(data)
             })
             .then(response => {
-                if (response.status !== 204) {
+                if (response.status !== 200) {
                     reject({
                         errorCode: response.status,
                     });
                 }
-
                 return response;
             })
-            .then(response => response.json())
-            .then(data => { //TODO maybe remove data
-                if ('errorCode' in data) {
-                    reject();
-                } else {
-                    resolve();
-                }
+            .then(() => { 
+                resolve();
             })
             .catch(reject);
     });
