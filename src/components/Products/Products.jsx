@@ -18,7 +18,6 @@ class Products extends Component {
         </div>
         <p className="Products-intro">
           <form onSubmit={this.handleSubmit}>
-            <h3>Add new product</h3>
             <label>
               Name:
               <input
@@ -58,11 +57,6 @@ class Products extends Component {
             <input type="submit" value="Add" />
           </form>
         </p>
-        <div>
-        <button onClick={this.exportToXLS}>Export shown to xls</button>
-        <label/>{" "}
-        <button onClick={this.showLeftovers}>Show leftovers</button>
-        </div>
         <div>
           <ReactTable
             data={data}
@@ -123,6 +117,11 @@ class Products extends Component {
             className="-striped -highlight"
           />
         </div>
+        <div>
+        <button onClick={this.exportToXLS}>Export shown to xls</button>
+        <label/>{"   "}
+        <button onClick={this.showLeftovers}>Show leftovers</button>
+        </div>
       </div>
     );
   };
@@ -175,8 +174,9 @@ class Products extends Component {
     event.preventDefault();
   }
 
-  showLeftovers() {
+  showLeftovers = event => {
     this.props.leftoversFetchData(`http://localhost:8080/api/products/leftovers`);
+    event.preventDefault();
   }
 }
 

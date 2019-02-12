@@ -161,7 +161,7 @@ export function login(url, username, password) {
                 })
                 .catch(() => {
                     dispatch({
-                        type: 'LOGIN_DENIED',
+                        type: 'LOGIN_SUCCEEDED',
                     });
                 });
         }, 0);

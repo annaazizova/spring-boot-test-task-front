@@ -56,6 +56,7 @@ function onProductsFetchDataResolve(state, { data }) {
         ...state,
         isLoading: false,
         data: data,
+        page: 'PRODUCTS',
     };
 }
 
