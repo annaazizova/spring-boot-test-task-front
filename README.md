@@ -1,6 +1,7 @@
 This project is front part for [spring_boot_test_task_back](https://github.com/annaazizova/spring_boot_test_task_back) - simple inventory system.
 
-### Tech/framework used
+## Tech/framework used
+
 <ul>
   <li>React</li>
   <li>Redux</li>
@@ -8,7 +9,8 @@ This project is front part for [spring_boot_test_task_back](https://github.com/a
   <li>HTML</li>
 </ul>
 
-### Features
+## Features
+
 User is able to
 <ul>
   <li>see all products table</li>
