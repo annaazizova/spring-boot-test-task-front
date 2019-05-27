@@ -117,15 +117,27 @@ export function exportToXLS(url, data) {
 }
 
 export function login(url, username, password) {
+    let details = {
+        'username': username,
+        'password': password
+    };
+
+    let formBody = [];
+    for (let property in details) {
+        let encodedKey = encodeURIComponent(property);
+        let encodedValue = encodeURIComponent(details[property]);
+        formBody.push(encodedKey + "=" + encodedValue);
+    }
+    formBody = formBody.join("&");
     return new Promise((resolve, reject) => {
         fetch(url,
             {
                 method: 'POST',
-                headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({ username:username, password:password })
+                headers: {'Content-Type':'application/x-www-form-urlencoded'},
+                body: formBody
             })
             .then(response => {
-                if (response.status !== 200) {//TODO change status
+                if (response.status !== 200) {
                     reject({
                         errorCode: response.status,
                     });
@@ -134,7 +146,7 @@ export function login(url, username, password) {
                 return response;
             })
             .then(response => response.json())
-            .then(userRole => { //TODO maybe remove data
+            .then(userRole => { 
                 resolve(userRole);
             })
             .catch(reject);

@@ -44,7 +44,7 @@ class LoginPage extends React.Component {
 
         const { username, password } = this.props;
         if (username && password) {
-            this.props.login('loginurl',username, password);//TODO add login url
+            this.props.login('http://localhost:8080/login',username, password);//TODO add login url
         }
     }
 }
