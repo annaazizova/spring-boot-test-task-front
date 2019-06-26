@@ -1,4 +1,4 @@
-This project is front part for [spring_boot_test_task_back](https://github.com/annaazizova/spring_boot_test_task_back) - simple inventory system.
+This project is front part for [spring-boot-test-task-back](https://github.com/annaazizova/spring-boot-test-task-back) - simple inventory system.
 
 ## Tech/framework used
 
@@ -31,7 +31,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
 
-Run [spring_boot_test_task_back](https://github.com/annaazizova/spring_boot_test_task_back) to work with app.
+Run [spring-boot-test-task-back](https://github.com/annaazizova/spring-boot-test-task-back) to work with app.
 
 ### `npm run build`
 
